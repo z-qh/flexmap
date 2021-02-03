@@ -1,0 +1,118 @@
+<!-- html地图头 -->
+<!DOCTYPE html>  
+<html>
+<head>  
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+<title>MAP</title>
+<style type="text/css"></style>
+<!-- 包含在线API -->
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=3.0&ak=d5Frz2gzwTXddtUfFkoys8FfAQXcOkpi"></script>
+<!-- 包含QT的webChannel -->
+<script src="qwebchannel.js"></script> 
+</head>  
+<body>
+<div style="left:0;top:0;width:100%;height:100%;position:absolute;" id="container"></div>
+</body>
+</html>
+
+<!-- js脚本 -->
+<script>
+
+//初始化地图
+var mapOptions={
+    minZoom: 3,
+    maxZoom:19,
+    mapType: BMAP_NORMAL_MAP,
+    enableMapClick: false
+}//地图规格
+var map = new BMap.Map("container", mapOptions);//设置街道为底
+var firstpoint = new BMap.Point(121.53601528191149,38.892688938817976);//创建点坐标
+map.centerAndZoom(firstpoint, 19);//初始化地图中心和级别
+map.addControl(new BMap.NavigationControl({offset: new BMap.Size(10, 90)}));//设置地图大小
+map.enableScrollWheelZoom();//启用滚轮放大缩小
+map.disableDoubleClickZoom();//禁用双击放大
+map.enableKeyboard();//启用键盘操作
+map.enableContinuousZoom();//启动连续缩放
+var marker = new BMap.Marker(firstpoint);// 创建标注
+map.addOverlay(marker);// 加载标注
+var point_temp = firstpoint;//临时变量记录上一个点位置
+//记录点数组
+var point_array = [
+];
+var polyline;
+
+//加载qt中webchannel对象
+new QWebChannel(qt.webChannelTransport,
+    function(channel){
+        window.bridge = channel.objects.qtfun;
+    }
+);
+//用两点画线
+function my_polyline(var1, var2, var3, var4)
+{
+    var two_points = [
+        new BMap.Point(var1, var2),
+        new BMap.Point(var3, var4),
+    ];
+    polyline = new BMap.Polyline(two_points);
+    map.addOverlay(polyline);
+}
+//单击事件调用函数，调用qt函数
+var single_click = function(lng,lat)
+{
+    window.bridge.get_posi(lng,lat);
+    point_temp = new BMap.Point(lng,lat);
+    marker = new BMap.Marker(point_temp);
+    map.addOverlay(marker);
+}
+//右击事件调用函数，
+var right_click = function(lng,lat)
+{
+    window.bridge.add_posi_to_list(lng,lat);
+    var line_point_array = [
+        point_temp,
+        new BMap.Point(lng,lat),
+    ];   
+    point_temp = new BMap.Point(lng,lat);
+    marker = new BMap.Marker(point_temp);
+    map.addOverlay(marker);
+    polyline = new BMap.Polyline(line_point_array);
+    map.addOverlay(polyline);
+    window.bridge.get_posi(lng,lat);
+}
+//启用事件监听，地图点击事件
+map.addEventListener("click",function(e) {
+    single_click(e.point.lng,e.point.lat);
+});
+//启用事件监听，地图右击事件
+map.addEventListener("rightclick",function(e) {
+    right_click(e.point.lng,e.point.lat);
+});
+//重置地图函数，供qt调用
+function reset()
+{
+    map.clearOverlays();        //清除所有图层
+    map.centerAndZoom(firstpoint, 19);  //设置地图中心与缩放级别
+    marker = new BMap.Marker(firstpoint);// 创建标注
+    map.addOverlay(marker);// 加载标注
+    point_temp = new BMap.Point(121.53601528191149,38.892688938817976)
+}
+//删除所有地图标记
+function clear_all_marker()
+{
+    map.clearOverlays();
+}
+
+//my_polyline(121.535, 38.8925, 121.5359, 38.89223);
+function my_sum(var1,var2)
+{
+    return var1+var2;
+}
+
+function WTM()
+{
+    return 100;
+}
+
+
+</script>
