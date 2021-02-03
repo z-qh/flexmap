@@ -19,11 +19,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->map->page()->setWebChannel(map_channel);
 
     //设置HTML
-    QString mapPath = "E:/WS_qt/Baymax_GPS/mainmap.html";
+    QString mapPath = "qrc:/webpage/mainmap.html";
     ui->map->setUrl(QUrl(mapPath));
     //显示地图
     ui->map->show();
-
 
     file_node_num = 0;
 }
