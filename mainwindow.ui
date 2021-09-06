@@ -129,7 +129,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>卫星图</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_node_line">
@@ -158,6 +158,19 @@
      <string>打开文件</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_convetr">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>460</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>卫星图</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -165,7 +178,7 @@
      <x>0</x>
      <y>0</y>
      <width>1113</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

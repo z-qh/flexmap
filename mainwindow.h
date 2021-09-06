@@ -14,6 +14,8 @@
 #include <QScriptValue>
 #include <QScriptValueList>
 #include <QFileDialog>
+#include <QLabel>
+
 
 
 QT_BEGIN_NAMESPACE
@@ -42,6 +44,12 @@ public:
     void show_point();
     int read_node_file(QString path);
 
+protected:
+    virtual void resizeEvent(QResizeEvent *event) override;
+
+private:
+    bool mapStatus = false;
+
 private slots:
     void on_pushButton_reset_clicked();
     void on_pushButton_record_node_clicked();
@@ -53,6 +61,7 @@ private slots:
     void on_pushButton_node_line_clicked();
 
     void on_pushButton_read_file_and_line_clicked();
+
 
 public slots:
     void get_posi(QString lon, QString lat);

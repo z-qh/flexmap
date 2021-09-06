@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "math.h"
 
@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     //设置webchannel
     map_channel = new QWebChannel(this);
     map_channel->registerObject("qtfun", (QObject*)this);
+    ui->map->resize(1920, 1080);
     ui->map->page()->setWebChannel(map_channel);
 
     //设置HTML
@@ -23,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->map->setUrl(QUrl(mapPath));
     //显示地图
     ui->map->show();
+
+    ui->pushButton->setText(QString::fromLocal8Bit("卫星图"));
 
     file_node_num = 0;
 }
@@ -38,6 +41,8 @@ void MainWindow::on_pushButton_reset_clicked()
     //调用js函数
     ui->map->page()->runJavaScript("reset();");
 }
+
+
 
 //地图单机事件函数，获取坐标
 void MainWindow::get_posi(QString lon, QString lat)
@@ -78,6 +83,13 @@ void wgs84tobd09(double& lng, double& lat)
     double theta = atan2(mglat, mglng) + 0.000003 * cos(mglng * x_PI);
     lng = z * cos(theta) + 0.0065;
     lat = z * sin(theta) + 0.006;
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    qDebug() << this->size().width();
+    qDebug() << this->size().height();
+    ui->map->resize(this->size().width()-350, this->size().height()-80);
 }
 
 //将点存到vector中
@@ -145,9 +157,30 @@ void MainWindow::on_pushButton_clear_node_clicked()
 //测试值传递并且返回值，一个函数处理qt按键，另一个函数处理回调返回值
 void MainWindow::on_pushButton_clicked()
 {
-    QString result = "";
-    ui->map->page()->runJavaScript("my_sum(100,10);", [this](const QVariant& v){this->WTM(v.toString());});
+    //QString result = "";
+    //ui->map->page()->runJavaScript("my_sum(100,10);", [this](const QVariant& v){this->WTM(v.toString());});
+
+    //切换到几何图
+    if(mapStatus)
+    {
+        mapStatus = false;
+        ui->map->page()->runJavaScript("normal();");
+        ui->pushButton->setText(QString::fromLocal8Bit("卫星图"));
+        return;
+    }
+    //切换到卫星图
+    else
+    {
+        mapStatus = true;
+        //调用js函数
+        ui->map->page()->runJavaScript("earth();");
+        ui->pushButton->setText(QString::fromLocal8Bit("几何图"));
+        return;
+    }
+
 }
+
+
 //测试，回调函数
 void MainWindow::WTM(QString str)
 {
@@ -209,3 +242,7 @@ void MainWindow::on_pushButton_read_file_and_line_clicked()
         show_point();
     }
 }
+
+
+
+
